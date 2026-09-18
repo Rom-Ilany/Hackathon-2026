@@ -1,0 +1,96 @@
+yuval_samet,gal_grossman,lihi_dahan,rom_ilany
+318960812,322353855,325198091,213127335
+
+Short Explanation:
+Our model is a small ResNet-style image classifier trained from scratch.
+It receives a 224x224 RGB image and predicts one of the 20 target classes.
+
+We chose a small ResNet because it gives a good balance between accuracy,
+training stability, and model size. A simple CNN can learn basic image features,
+but when the network becomes deeper it can become harder to train. ResNet-style
+skip connections help with this problem: each block can keep useful information
+from earlier layers and only learn the needed correction. This makes the
+training more stable and helps the model learn both simple patterns, such as
+edges and colors, and more meaningful object features, such as shape and object
+parts.
+
+We preferred a smaller ResNet over a very large model because the dataset is
+limited to 20 classes. A very large model could overfit the training images,
+especially because we train from random initialization and cannot use pretrained
+weights. The small ResNet is still strong enough to learn useful visual
+features, but it is easier to train and less likely to overfit compared to a
+much larger architecture.
+
+Hyperparameters:
+We tuned the main hyperparameters by trial and error and selected the model
+according to clean validation performance.
+The learning rate controls how large each update step is during training. We
+used Adam with a learning rate of 0.001, because it gave stable improvement
+during training and did not require very delicate manual tuning.
+
+The batch size controls how many images are used before each optimizer update.
+We used a batch size of 128 for all our training runs, as it optimized GPU
+utilization and made the gradient estimate smoother while generalizing well.
+The number of epochs controls how many times the model sees the training set.
+
+We split our training into two distinct phases (30 epochs for the baseline,
+followed by 15 epochs for augmented training). Instead of simply using the
+weights from the last epoch of each run, we saved the model whenever the
+validation accuracy improved. This way, the final weights.joblib file
+contains the strictly best model found during training.
+
+We used CrossEntropyLoss because this is a multi-class classification problem:
+each image belongs to exactly one of the 20 possible classes.
+
+Baseline experiment:
+Before adding augmentations, we first trained a baseline model without extra
+data augmentations. The goal was to verify that the architecture can learn the
+20 classes from the clean training images. We trained this baseline model for
+30 epochs with a batch size of 128.
+
+This baseline stage was important because it gave us a stable reference point.
+It helped us understand whether performance problems came from the model itself
+or from the robustness strategy. After this initial run, the baseline model
+reached an impressive 81.17% accuracy on our clean local evaluation set.
+
+Data manipulations and augmentation strategy:
+After establishing the baseline, we continued with augmentation experiments.
+Instead of starting from scratch, we loaded the best weights achieved during
+the baseline run and resumed training on the augmented dataset for an
+additional 15 epochs (using the same batch size of 128).
+
+The idea was to build upon the basic visual structure the model had already
+learned from the clean samples, and make it more robust to visual changes
+that should not change the class label.
+
+The main manipulations we used were image transformations such as rotations,
+horizontal flips, changes in scale or crop, shifts, and color or brightness
+changes. These augmentations simulate natural changes in images, such as a
+slightly different object position, lighting condition, or camera crop.
+
+We avoided applying too many extreme augmentations together to prevent the
+training images from becoming too distorted. The goal was to expose the model
+to controlled visual variation so that it learns to focus more on the object
+itself and less on shortcuts such as background, lighting, or color.
+
+Results and observations:
+Baseline clean local evaluation accuracy: 81.17%
+The baseline model already achieved strong clean evaluation performance. This
+means the chosen architecture was able to learn the 20 target classes well
+without relying on external data or pretrained weights.
+
+Augmentations were used as a robustness strategy. By fine-tuning our strong
+baseline model with augmented data, we aimed to improve stability on images
+with changes in color, lighting, crop, or geometry.
+
+Final selected model: Augmented model (fine-tuned from baseline)
+Augmented accuracy: 85.3%
+
+Final files:
+The submitted folder contains:
+* train.py: training script used to train the model and save weights.
+* model.py: defines the model architecture.
+* predict.py: grader-facing wrapper that loads the model and returns one class
+  prediction per image.
+* weights.joblib: saved model weights.
+* README: this explanation file.
