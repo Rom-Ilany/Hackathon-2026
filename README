@@ -1,7 +1,7 @@
 
 
 Short Explanation:
-Our model is a small ResNet-style image classifier trained from scratch.
+the model is a small ResNet-style image classifier trained from scratch.
 It receives a 224x224 RGB image and predicts one of the 20 target classes.
 
 We chose a small ResNet because it gives a good balance between accuracy,
