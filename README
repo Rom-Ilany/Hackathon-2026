@@ -1,5 +1,4 @@
-yuval_samet,gal_grossman,lihi_dahan,rom_ilany
-318960812,322353855,325198091,213127335
+
 
 Short Explanation:
 Our model is a small ResNet-style image classifier trained from scratch.
