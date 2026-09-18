@@ -85,11 +85,4 @@ with changes in color, lighting, crop, or geometry.
 Final selected model: Augmented model (fine-tuned from baseline)
 Augmented accuracy: 85.3%
 
-Final files:
-The submitted folder contains:
-* train.py: training script used to train the model and save weights.
-* model.py: defines the model architecture.
-* predict.py: grader-facing wrapper that loads the model and returns one class
-  prediction per image.
-* weights.joblib: saved model weights.
-* README: this explanation file.
+
